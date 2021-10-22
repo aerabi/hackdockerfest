@@ -1,0 +1,42 @@
+name: "Scan Docker Application for Vulnerabilities"
+
+# Triggered when code is pushed to any branch in a repository
+on: push
+
+defaults:
+  run:
+    shell: bash
+    working-directory: security-testing
+
+jobs:
+  build-and-test-image:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - run: echo "🎉 The job was triggered by a ${{ github.event_name }} event, and is running on a ${{ runner.os }} server"
+
+      - run: echo "🔎 Testing branch ${{ github.ref }} from repository ${{ github.repository }}"
+
+      - uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t test-sec-image .
+
+      - name: Scan image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          [[ ! -z $SNYK_TOKEN ]] && AUTHN_ARG="--token ${SNYK_TOKEN}"
+          docker scan "${AUTHN_ARG}" test-sec-image
+
+      - name: Run Docker CIS Benchmark
+        run: |
+          docker run -d --name my-app -p 8080:8080 test-sec-image
+          docker run --net host --pid host --rm \
+            --cap-add AUDIT_CONTROL --userns host -l docker_bench_security \
+            -v /etc:/etc:ro -v /usr/bin/docker-containerd:/usr/bin/docker-containerd:ro \
+            -v /usr/bin/runc:/usr/bin/runc:ro -v /usr/lib/systemd:/usr/lib/systemd:ro \
+            -v /var/lib:/var/lib:ro -v /var/run/docker.sock:/var/run/docker.sock:ro \
+            docker/docker-bench-security -c container_images,container_runtime -i test-sec-image,my-app
