@@ -27,8 +27,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
-          [[ ! -z $SNYK_TOKEN ]] && AUTHN_ARG="--token ${SNYK_TOKEN}"
-          docker scan "${AUTHN_ARG}" test-sec-image
+          SNYK_TOKEN="${SNYK_TOKEN}" snyk container test --docker test-sec-image
 
       - name: Run Docker CIS Benchmark
         run: |
