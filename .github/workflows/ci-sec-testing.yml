@@ -31,7 +31,7 @@ jobs:
             -v /etc:/etc:ro -v /usr/bin/docker-containerd:/usr/bin/docker-containerd:ro \
             -v /usr/bin/runc:/usr/bin/runc:ro -v /usr/lib/systemd:/usr/lib/systemd:ro \
             -v /var/lib:/var/lib:ro -v /var/run/docker.sock:/var/run/docker.sock:ro \
-            docker/docker-bench-security -c container_images,container_runtime -i test-sec-image,my-app
+            docker/docker-bench-security -c container_images,container_runtime -t test-sec-image -i my-app
 
       - name: Scan image for vulnerabilities
         env:
