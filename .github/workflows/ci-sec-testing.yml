@@ -27,6 +27,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
+          sudo npm install -g snyk
           SNYK_TOKEN="${SNYK_TOKEN}" snyk container test --docker test-sec-image
 
       - name: Run Docker CIS Benchmark
