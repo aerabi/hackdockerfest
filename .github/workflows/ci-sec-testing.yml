@@ -23,13 +23,6 @@ jobs:
       - name: Build Docker image
         run: docker build -t test-sec-image .
 
-      - name: Scan image for vulnerabilities
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          sudo npm install -g snyk
-          SNYK_TOKEN="${SNYK_TOKEN}" snyk container test --docker test-sec-image
-
       - name: Run Docker CIS Benchmark
         run: |
           docker run -d --name my-app -p 8080:8080 test-sec-image
@@ -39,3 +32,10 @@ jobs:
             -v /usr/bin/runc:/usr/bin/runc:ro -v /usr/lib/systemd:/usr/lib/systemd:ro \
             -v /var/lib:/var/lib:ro -v /var/run/docker.sock:/var/run/docker.sock:ro \
             docker/docker-bench-security -c container_images,container_runtime -i test-sec-image,my-app
+
+      - name: Scan image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          sudo npm install -g snyk
+          SNYK_TOKEN="${SNYK_TOKEN}" snyk container test --docker test-sec-image
