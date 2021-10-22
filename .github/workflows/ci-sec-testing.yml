@@ -14,11 +14,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: actions/checkout@v2
+
       - run: echo "🎉 The job was triggered by a ${{ github.event_name }} event, and is running on a ${{ runner.os }} server"
 
       - run: echo "🔎 Testing branch ${{ github.ref }} from repository ${{ github.repository }}"
-
-      - uses: actions/checkout@v2
 
       - name: Build Docker image
         run: docker build -t test-sec-image .
