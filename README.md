@@ -25,6 +25,10 @@ Hacktoberfest + Docker + Meetup + Oktoberfest :beer:
 
 Add more tips, tricks, or references to this document. This repo is Hacktoberfest participant and your contributions count towards the Hacktoberfest prize.
 
+More repos to contribute to:
+
+- [Events](https://github.com/aerabi/events)
+
 ## Contributors
 
 [![List of Contributors](https://contrib.rocks/image?repo=aerabi/hackdockerfest)](https://github.com/aerabi/hackdockerfest/graphs/contributors)
