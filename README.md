@@ -4,6 +4,8 @@ Hacktoberfest + Docker + Meetup + Oktoberfest :beer:
 
 ## Getting Started
 
+<img src="black-forest-techies.png" width=200>
+
 - [Black Forest Techies](https://discord.gg/vjauK5qa) Discord server
 - [Hackdockerfest 2022 (in Freiburg)](https://www.meetup.com/docker-black-forest/events/287845505/) Meetup event
 - [Hackdockerfest 2021](https://youtu.be/S7T2y6UjQmQ) YouTube live
