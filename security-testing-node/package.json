@@ -1,0 +1,24 @@
+{
+  "name": "security-testing-node",
+  "version": "1.0.0",
+  "description": "An example Node.js application to showcase security scanning",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/aerabi/hackdockerfest.git"
+  },
+  "author": "Mohammad-Ali A'rabi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aerabi/hackdockerfest/issues"
+  },
+  "homepage": "https://github.com/aerabi/hackdockerfest#readme",
+  "dependencies": {
+    "express": "^2.0.0-rc",
+    "lodash": "^0.5.2",
+    "nab-chat-widget": "^0.0.1-security"
+  }
+}
