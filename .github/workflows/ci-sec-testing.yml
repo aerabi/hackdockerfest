@@ -10,10 +10,6 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}-flask
 
-defaults:
-  run:
-    working-directory: security-testing
-
 jobs:
   docker_build:
     runs-on: ubuntu-latest
@@ -63,7 +59,7 @@ jobs:
           args: --file=security-testing/Dockerfile
 
       - name: List files in the working directory
-        run: ls -R
+        run: pwd && ls -la
 
       - name: Upload Snyk scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
