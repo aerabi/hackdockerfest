@@ -1,41 +1,92 @@
 name: "Scan Docker Application for Vulnerabilities"
 
-# Triggered when code is pushed to any branch in a repository
-on: push
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-flask
 
 defaults:
   run:
     working-directory: security-testing
 
 jobs:
-  build-and-test-image:
-    # The type of runner that the job will run on
+  docker_build:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - run: echo "🎉 The job was triggered by a ${{ github.event_name }} event, and is running on a ${{ runner.os }} server"
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: echo "🔎 Testing branch ${{ github.ref }} from repository ${{ github.repository }}"
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build Docker image
-        run: docker build -t test-sec-image .
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: security-testing
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Run Docker CIS Benchmark
-        run: |
-          docker run -d --name my-app -p 8080:8080 test-sec-image
-          docker run --net host --pid host --rm \
-            --cap-add AUDIT_CONTROL --userns host -l docker_bench_security \
-            -v /etc:/etc:ro -v /usr/bin/docker-containerd:/usr/bin/docker-containerd:ro \
-            -v /usr/bin/runc:/usr/bin/runc:ro -v /usr/lib/systemd:/usr/lib/systemd:ro \
-            -v /var/lib:/var/lib:ro -v /var/run/docker.sock:/var/run/docker.sock:ro \
-            docker/docker-bench-security -c container_images,container_runtime -t test-sec-image -i my-app
-
-      - name: Scan image for vulnerabilities
+  docker_scan_snyk:
+    runs-on: ubuntu-latest
+    needs:
+      - docker_build
+    steps:
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Run Snyk to check Docker image for vulnerabilities
+        uses: snyk/actions/docker@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          sudo npm install -g snyk
-          SNYK_TOKEN="${SNYK_TOKEN}" snyk container test --docker test-sec-image
+        with:
+          image: ${{ steps.meta.outputs.tags }}
+
+  docker_scan_trivy:
+    runs-on: ubuntu-latest
+    needs:
+      - docker_build
+    steps:
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+      - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Snapshots
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          github-pat: ${{ secrets.DEPENDENCY_TREE_PAT }}
