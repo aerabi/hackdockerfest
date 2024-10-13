@@ -56,39 +56,42 @@ docker compose up
 
 Here are some of the most commonly used Docker Compose commands:
 
-Start services:
+- Start services:
 
 ```bash
 docker-compose up
 ```
 
-Start services in the background:
+- Start services in the background:
 
 ```bash
 docker-compose up -d
 ```
-Stop services:
+- Stop services:
 
 ```bash
 docker-compose stop
 ```
-Shut down services and remove containers, networks, and volumes:
+
+- Shut down services and remove containers, networks, and volumes:
 
 ```bash
 docker-compose down
 ```
-View running services:
+
+- View running services:
 
 ```bash
 docker-compose ps
 ```
-View logs for all services:
+
+- View logs for all services:
 
 ```bash
 docker-compose logs
 ```
 
-Execute a command inside a running container:
+- Execute a command inside a running container:
 
 ```bash
 docker-compose exec <service_name> <command>
