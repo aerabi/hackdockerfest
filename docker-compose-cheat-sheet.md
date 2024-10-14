@@ -35,8 +35,6 @@ Please refer to the [official installation guide](https://docs.docker.com/compos
 To get started with Docker Compose, create a `docker-compose.yml` file in your project directory. Here is an example file:
 
 ```yaml
-version: '3.8'
-
 services:
   web:
     image: nginx:alpine
@@ -101,7 +99,6 @@ docker-compose exec <service_name> <command>
 
 The docker-compose.yml file is where you define your services, networks, and volumes. Commonly used configuration options include:
 
-- version: Specifies the version of the Compose file format.
 - services: Defines the services (containers) for the application.
 - networks: Specifies the networks to be created and used by services.
 - volumes: Configures persistent data storage.
@@ -110,8 +107,6 @@ The docker-compose.yml file is where you define your services, networks, and vol
 Example docker-compose.yml:
 
 ```yaml
-version: '3.8'
-
 services:
   app:
     build: .
@@ -206,8 +201,6 @@ services:
 Example using an .env file:
 
 ```yaml
-version: '3.8'
-
 services:
   app:
     env_file:
