@@ -18,6 +18,7 @@ This cheat sheet is a quick reference for the most common Docker Compose command
 - [Healthchecks](#healthchecks)
 - [Dependencies](#dependencies)
 - [Extensions](#extensions)
+- [Include](#include)
 - [References](#references)
 
 ## Installation
@@ -276,6 +277,21 @@ services:
     extends:
       service: base
     command: sleep 3600
+```
+
+## Include
+
+Docker Compose's `include` feature allows you to import and reuse configuration from other Compose files.
+This is useful for modularizing your Compose configurations and avoiding duplication.
+
+```yaml
+include:
+  - service-b-include.yaml  # serviceB declaration
+services:
+  serviceA:
+    build: .
+    depends_on:
+      - serviceB
 ```
 
 ## References
