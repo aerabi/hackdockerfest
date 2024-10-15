@@ -19,6 +19,7 @@ This cheat sheet is a quick reference for the most common Docker Compose command
 - [Dependencies](#dependencies)
 - [Extensions](#extensions)
 - [Include](#include)
+- [Watch](#Watch)
 - [References](#references)
 
 ## Installation
@@ -96,16 +97,18 @@ docker-compose logs
 docker-compose exec <service_name> <command>
 ```
 
+
+
 ## Configuration
 
-The docker-compose.yml file is where you define your services, networks, and volumes. Commonly used configuration options include:
+The `docker-compose.yml` file is where you define your services, networks, and volumes. Commonly used configuration options include:
 
 - services: Defines the services (containers) for the application.
 - networks: Specifies the networks to be created and used by services.
 - volumes: Configures persistent data storage.
 - build: Builds the image from a Dockerfile.
 
-Example docker-compose.yml:
+Example `docker-compose.yml`:
 
 ```yaml
 services:
@@ -123,11 +126,11 @@ services:
 
 Each service defines a container that runs as part of your application. Here are some key options for defining services:
 
-- image: The Docker image to use (e.g., nginx:alpine).
+- image: The Docker image to use (e.g., `nginx:alpine`).
 - build: Path to a directory containing a Dockerfile.
 - ports: Exposes ports from the container to the host (e.g., "8080:80").
-- volumes: Mounts host paths or named volumes into the container (e.g., ./app:/app).
-- environment: Sets environment variables inside the container (e.g., DEBUG=1).
+- volumes: Mounts host paths or named volumes into the container (e.g., `./app:/app`).
+- environment: Sets environment variables inside the container (e.g., `DEBUG=1`).
 - depends_on: Specifies dependencies between services.
 
 ## Volumes
@@ -168,7 +171,7 @@ docker-compose volumes ls
 
 ## Network
 
-Docker Compose automatically creates a default network for your application. You can define custom networks in the docker-compose.yml file:
+Docker Compose automatically creates a default network for your application. You can define custom networks in the `docker-compose.yml` file:
 
 ```yaml
 networks:
@@ -188,7 +191,7 @@ Types of networks:
 
 ## Environment Variables
 
-You can pass environment variables to services using either the environment key or by referencing an external .env file:
+You can pass environment variables to services using either the environment key or by referencing an external `.env` file:
 Example using the environment key:
 
 ```yaml
@@ -199,7 +202,7 @@ services:
       - DATABASE_URL=postgres://db:5432/mydb
 ```
 
-Example using an .env file:
+Example using a `.env` file:
 
 ```yaml
 services:
@@ -244,7 +247,7 @@ services:
 
 ## Dependencies
 
-To define service startup dependencies, use the depends_on option. Note that this only ensures that containers are started in the correct order, but doesn't guarantee that the dependent service is ready (for this, use health checks):
+To define service startup dependencies, use the `depends_on` option. Note that this only ensures that containers are started in the correct order, but doesn't guarantee that the dependent service is ready (for this, use health checks):
 
 ```yaml
 services:
@@ -274,7 +277,7 @@ services:
 
 ## Include
 
-Docker Compose's `include` feature allows you to import and reuse configuration from other Compose files.
+Docker compose's `include` feature allows you to import and reuse configuration from other compose files.
 This is useful for modularizing your Compose configurations and avoiding duplication.
 
 ```yaml
@@ -286,6 +289,27 @@ services:
     depends_on:
       - serviceB
 ```
+
+## Watch
+
+Docker Compose Watch is a feature in Docker Compose (introduced in v2.16.0) that automatically watches your project files for changes and updates the services in real-time, making it perfect for development environments.
+
+**Key Features:**
+- _Real-time updates_: Automatically rebuilds and restarts services when files change.
+- _Development efficiency_: Eliminates the need to manually run `docker compose up` after each change.
+- _Automatic rebuilds_: Detects changes in application code, Dockerfiles, and configuration files.
+- _Customizable_: Supports custom watch configurations for different use cases.
+
+```bash
+docker compose up --watch
+```
+This command:
+- Starts your services.
+- Continuously monitors for file changes (e.g., code, configuration files).
+- Automatically applies updates by restarting or rebuilding services as needed.
+
+This is a development tool, and using it in production could result in unintended service disruptions.
+Files such as Dockerfiles, docker-compose.yml, and mounted application files will be watched. Exact behavior depends on your project setup.
 
 ## References
 
