@@ -311,6 +311,30 @@ This command:
 This is a development tool, and using it in production could result in unintended service disruptions.
 Files such as Dockerfiles, docker-compose.yml, and mounted application files will be watched. Exact behavior depends on your project setup.
 
+Example `docker-compose.yml` with watch:
+
+```yaml
+ services:
+  web:
+    build: .
+    command: npm start
+    develop:
+      watch:
+        - action: sync
+          path: ./web
+          target: /app/web
+          ignore:
+            - node_modules/
+        - action: sync+restart
+          path: ./proxy/nginx.conf
+          target: /etc/nginx/conf.d/default.conf
+
+  backend:
+    build:
+      context: backend
+      target: builder
+```
+
 ## References
 
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
